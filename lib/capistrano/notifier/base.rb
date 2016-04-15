@@ -17,9 +17,18 @@ class Capistrano::Notifier::Base
   end
 
   def git_log
+    write_version_file
     return unless git_range
 
     `git log #{git_range} --no-merges --format=format:"%h %s (%an)"`
+  end
+
+  def write_version_file
+    return if @written_version_file
+
+    `git log --format=format:"%h %s (%cr by %an)" -100 > log/commits.txt`
+
+    @written_version_file = true
   end
 
   def git_previous_revision
